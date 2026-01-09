@@ -221,23 +221,17 @@ function removeFileFromList(filename) {
 }
 
 // File actions
-async function downloadFile(filename, originalName) {
-    try {
-        const response = await fetch(`/download/${filename}`);
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = originalName;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        showNotification('Download started!', 'success');
-    } catch (error) {
-        console.error('Error downloading file:', error);
-        showNotification('Download failed. Please try again.', 'error');
-    }
+function downloadFile(filename, originalName) {
+    // Use direct link for streaming download - no loading into memory
+    // This allows immediate download start and Chrome's native download UI
+    const a = document.createElement('a');
+    a.href = `/download/${filename}`;
+    a.download = originalName;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showNotification('Download started!', 'success');
 }
 
 async function deleteFile(filename) {
