@@ -13,6 +13,11 @@ A simple, secure peer-to-peer file transfer application using Tailscale for priv
 
 ## Prerequisites
 
+### For Docker Deployment (Recommended)
+- Docker and Docker Compose
+- Tailscale installed and configured on the host
+
+### For Manual Installation
 - Node.js (v14 or higher)
 - npm (comes with Node.js)
 - Tailscale installed and configured
@@ -51,6 +56,50 @@ tailscale status
 You should see your device listed with an IP address (usually in the 100.x.x.x range).
 
 ## Installation
+
+### Option 1: Docker Deployment (Recommended)
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd P2P-File-Transfer
+```
+
+2. Ensure Tailscale is running on your host:
+```bash
+sudo tailscale up
+```
+
+3. Start the container:
+```bash
+docker-compose up -d
+```
+
+The server will start on port 3000. Check the logs to see your Tailscale IP:
+```bash
+docker-compose logs
+```
+
+4. Access the application:
+- Local URL: `http://localhost:3000`
+- Tailscale URL: `http://<your-tailscale-ip>:3000`
+
+**To stop the container:**
+```bash
+docker-compose down
+```
+
+**To view logs:**
+```bash
+docker-compose logs -f
+```
+
+**To rebuild after changes:**
+```bash
+docker-compose up -d --build
+```
+
+### Option 2: Manual Installation
 
 1. Clone the repository:
 ```bash
@@ -100,6 +149,16 @@ Or check the console output when starting the server.
 
 ### Change Port
 
+**For Docker:**
+Edit `docker-compose.yml` and change the port mappings and environment variable:
+```yaml
+ports:
+  - "8080:8080"
+environment:
+  - PORT=8080
+```
+
+**For Manual Installation:**
 Set the `PORT` environment variable:
 ```bash
 PORT=8080 npm start
@@ -151,6 +210,22 @@ Files are stored in the `uploads/` directory by default. To change this, modify 
 - Check if a proxy or firewall is blocking WebSocket connections
 - Try accessing via localhost first to rule out network issues
 
+### Docker-Specific Issues
+
+**Container won't start:**
+- Check Docker logs: `docker-compose logs`
+- Ensure port 3000 is not already in use
+- Verify Docker and Docker Compose are installed: `docker --version && docker-compose --version`
+
+**Can't access via Tailscale IP in Docker:**
+- Ensure Tailscale is running on the host (not in container)
+- Verify `network_mode: host` is set in docker-compose.yml
+- Check host's Tailscale IP: `tailscale ip -4`
+
+**Files disappear after container restart:**
+- Ensure the volume is properly mounted in docker-compose.yml
+- Check that `./uploads:/app/uploads` is in the volumes section
+
 ## Development
 
 ### Project Structure
@@ -164,6 +239,9 @@ P2P-File-Transfer/
 ├── uploads/            # File storage (created automatically)
 ├── server.js           # Backend server
 ├── package.json        # Dependencies
+├── Dockerfile          # Docker container configuration
+├── docker-compose.yml  # Docker Compose configuration
+├── .dockerignore       # Docker ignore file
 └── README.md           # Documentation
 ```
 
