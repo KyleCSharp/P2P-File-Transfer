@@ -27,8 +27,8 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({
-  storage: storage,
-  limits: { fileSize: 1024 * 1024 * 1024 } // 1GB limit
+  storage: storage
+  // No file size limit - unlimited uploads
 });
 
 // Serve static files

@@ -7,7 +7,7 @@ A simple, secure peer-to-peer file transfer application using Tailscale for priv
 - **Drag & Drop Upload**: Easy file uploads with drag-and-drop interface
 - **Real-time Updates**: WebSocket-based live file list updates
 - **Secure Networking**: Leverages Tailscale for encrypted P2P connections
-- **Large File Support**: Upload files up to 1GB
+- **Unlimited File Size**: Upload files of any size (no file size limit)
 - **Cross-Platform**: Works on any device with a web browser
 - **No External Dependencies**: Runs entirely on your private Tailscale network
 
@@ -107,9 +107,12 @@ PORT=8080 npm start
 
 ### File Size Limit
 
-Edit `server.js` and modify the multer configuration:
+By default, there is no file size limit. If you want to add a limit, edit `server.js` and modify the multer configuration:
 ```javascript
-limits: { fileSize: 1024 * 1024 * 1024 } // 1GB in bytes
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1024 * 1024 * 1024 } // Example: 1GB in bytes
+});
 ```
 
 ### Upload Directory
@@ -138,9 +141,9 @@ Files are stored in the `uploads/` directory by default. To change this, modify 
 
 ### Files Not Uploading
 
-- Check file size is under 1GB limit
-- Verify disk space is available
+- Verify sufficient disk space is available
 - Check browser console for errors (F12)
+- Ensure the server is running and accessible
 
 ### WebSocket Connection Failed
 
